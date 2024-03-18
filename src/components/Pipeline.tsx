@@ -70,7 +70,7 @@ const Pipeline = () => {
       onClick={handleDeselect}
       onMouseUp={handleStop}
       onMouseDown={(e) => handleClick(e)}
-      className="border-zinc-800 w-full grow border relative overflow-hidden"
+      className="border-zinc-800 w-full grow border relative overflow-hidden bg-grid-pattern bg-repeat"
     >
       <Sidebar setObjects={setObjects} />
       {objects?.map((object, index) => {
