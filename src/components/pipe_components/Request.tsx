@@ -5,7 +5,7 @@ type Props = {
   object: PipeComponent;
 };
 
-const RequisicaoComp = ({ object }: Props) => {
+const Request = ({ object }: Props) => {
   return (
     <div className="flex flex-col gap-4">
       <header className="flex gap-2">
@@ -29,4 +29,4 @@ const RequisicaoComp = ({ object }: Props) => {
   );
 };
 
-export default RequisicaoComp;
+export default Request;

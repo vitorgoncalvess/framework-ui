@@ -1,12 +1,14 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import components, { Component } from "@/utils/models/components";
 import PipeComponent from "./PipeComponent";
-import componentFactory from "@/utils/factories/componentFactory";
+import componentFactory, {
+  PipeComponent as Type,
+} from "@/utils/factories/componentFactory";
 import Image from "next/image";
 import menu from "@images/menu.svg";
 
 type Props = {
-  setObjects: Dispatch<SetStateAction<any[]>>;
+  setObjects: Dispatch<SetStateAction<Type[]>>;
 };
 
 const Sidebar = ({ setObjects }: Props) => {
@@ -34,7 +36,7 @@ const Sidebar = ({ setObjects }: Props) => {
         style={{
           transform: isOpen ? "translateX(0px)" : "translateX(-256px)",
         }}
-        className="absolute bg-black z-10 top-0 bottom-0 left-0 border-r w-64 border-zinc-800 transition-all duration-300 overflow-hidden p-4 flex flex-col gap-4"
+        className="absolute bg-black z-10 top-0 bottom-0 left-0 border-r w-64 border-bd-base transition-all duration-300 overflow-auto p-4 flex flex-col gap-4"
       >
         {components.map((component, index) => (
           <PipeComponent

@@ -9,7 +9,6 @@ const Pipeline = () => {
   const [isMoving, setIsMoving] = useState<any>(null);
   const [obj, setObj] = useState<number | any>(null);
   const comps = useRef<any>([]);
-  const line = useRef<any>(null);
 
   const handleClick = (e: any) => {
     setIsMoving(e);
@@ -62,6 +61,10 @@ const Pipeline = () => {
     //eslint-disable-next-line
   }, [isMoving]);
 
+  const handleExec = () => {
+    console.log(objects);
+  };
+
   return (
     <div
       onClick={handleDeselect}
@@ -74,7 +77,7 @@ const Pipeline = () => {
         const Component = object.component;
         return (
           <div
-            className={`border rounded p-4 select-none bg-black transition absolute ${
+            className={`border rounded p-4 select-none bg-black transition absolute text-sm hover:border-zinc-600 ${
               obj === index ? "border-zinc-600" : "border-zinc-900"
             }`}
             style={{ left: object.x, top: object.y }}
@@ -86,10 +89,12 @@ const Pipeline = () => {
           </div>
         );
       })}
-      <button className="absolute bottom-4 right-4 border border-zinc-500 px-2 py-1 rounded transition hover:border-zinc-300">
+      <button
+        onClick={handleExec}
+        className="absolute bottom-4 right-4 border border-zinc-500 px-2 py-1 rounded transition hover:border-zinc-300"
+      >
         Executar
       </button>
-      <svg className="absolute inset-0" ref={line}></svg>
     </div>
   );
 };

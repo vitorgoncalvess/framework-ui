@@ -1,6 +1,8 @@
-import JsonVizualizerComp from "@/components/JsonVizualizerComp";
-import RequisicaoComp from "@/components/RequisicaoComp";
+import JsonVizualizerComp from "@/components/pipe_components/JsonVizualizer";
+import RequisicaoComp from "@/components/pipe_components/Request";
 import { Component } from "../models/components";
+import Value from "@/components/pipe_components/Value";
+import Plus from "@/components/pipe_components/Plus";
 
 export type PipeComponent = {
   id: string;
@@ -16,20 +18,30 @@ export type PipeComponent = {
 };
 
 const componentFactory = () => {
-  const createNewComponent = (comp: Component): PipeComponent | undefined => {
+  const createNewComponent = (comp: Component): PipeComponent => {
+    const createObj = (obj: any) => {
+      return {
+        id: comp.id,
+        x: "300px",
+        y: "60px",
+        callback: null,
+        isLinkedWith: "",
+        links: [],
+        data: null,
+        type_action: "",
+        ...obj,
+      };
+    };
     switch (comp.id.toLowerCase()) {
       case "req": {
-        return {
-          id: comp.id,
-          x: "45px",
-          y: "45px",
+        return createObj({
           component: RequisicaoComp,
           data: {
             url: "",
             status: 0,
             response: null,
           },
-          type_action: "SEND_DATA_TO",
+          type_action: "SEND_DATA",
           action: async function () {
             try {
               const response = await fetch(this.data.url);
@@ -41,23 +53,22 @@ const componentFactory = () => {
               console.log(err);
             }
           },
-          callback: null,
-          isLinkedWith: "",
-          links: [],
-        };
+        });
       }
       case "json-vizualizer": {
-        return {
-          id: comp.id,
-          x: "45px",
-          y: "45px",
+        return createObj({
           component: JsonVizualizerComp,
-          data: {},
           type_action: "RENDER",
-          callback: null,
-          isLinkedWith: "",
-          links: [],
-        };
+        });
+      }
+      case "value": {
+        return createObj({ component: Value, type_action: "SEND_DATA" });
+      }
+      case "plus": {
+        return createObj({ component: Plus, type_action: "SUM" });
+      }
+      default: {
+        return createObj({});
       }
     }
   };
