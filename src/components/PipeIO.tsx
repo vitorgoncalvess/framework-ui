@@ -41,16 +41,16 @@ const PipeIO = ({ io, input }: Props) => {
       <div
         onMouseOver={handleOver}
         onMouseOut={handleOut}
-        className={`bg-zinc-800 h-4 w-4 hover:bg-zinc-300 rounded-full bottom-2 absolute ${
-          input ? "-left-2" : "-right-2"
+        className={`bg-zinc-800 h-4 w-4 hover:bg-zinc-300 rounded-full bottom-0 absolute ${
+          input ? "-left-6" : "-right-6"
         }`}
       ></div>
       {open && (
         <div
-          className={`bg-zinc-950 rounded flex animate-tooltip-enter ${
+          className={`bg-zinc-950 border border-zinc-700 opacity-90 rounded flex animate-tooltip-enter ${
             isClosing && "animate-tooltip-out"
-          } flex-col gap-2 p-4 absolute bottom-2 text-xs font-medium ${
-            input ? "right-[calc(100%+20px)]" : "left-[calc(100%+20px)]"
+          } flex-col gap-2 p-4 absolute -bottom-4 text-xs font-medium ${
+            input ? "right-[calc(100%+30px)]" : "left-[calc(100%+30px)]"
           }`}
         >
           {Array.isArray(io) ? (

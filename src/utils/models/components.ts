@@ -18,6 +18,18 @@ const components: Component[] = [
     description: "Vizualizar JSONs em uma forma mais organizada e limpa.",
     image: null,
   },
+  {
+    id: "value",
+    name: "Valor",
+    description: "Objeto que irá armazerar um valor.",
+    image: null,
+  },
+  {
+    id: "plus",
+    name: "Somar",
+    description: "Somar uma entrada com um valor, ou duas entradas.",
+    image: null,
+  },
 ];
 
 export default components;

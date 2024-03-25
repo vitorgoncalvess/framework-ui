@@ -13,7 +13,7 @@ const PipeComponent = ({ component, onClick }: Props) => {
       onClick={onClick}
       className="border border-zinc-900 rounded p-2 flex flex-col cursor-pointer gap-2"
     >
-      <div className="bg-zinc-800 h-24 rounded-sm"></div>
+      <div className="bg-bd-base h-24 rounded-sm"></div>
       <div>
         <h1 className="font-medium">{name}</h1>
         <h2 className="opacity-50 text-sm">{description}</h2>
