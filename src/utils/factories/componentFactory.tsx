@@ -10,6 +10,8 @@ const componentFactory = () => {
           x: "45px",
           y: "45px",
           component: <RequisicaoComp />,
+          input: [],
+          output: "REQ_RESPONSE",
         };
       }
       case "json-vizualizer": {
@@ -17,6 +19,8 @@ const componentFactory = () => {
           x: "45px",
           y: "45px",
           component: <JsonVizualizerComp />,
+          input: ["REQ_RESPONSE", "JSON"],
+          output: null,
         };
       }
     }

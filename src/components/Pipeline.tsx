@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
+import PipeIO from "./PipeIO";
 
 const Pipeline = () => {
   const [objects, setObjects] = useState<any[]>([]);
@@ -62,13 +63,20 @@ const Pipeline = () => {
       <Sidebar setObjects={setObjects} />
       {objects?.map((obj, index) => (
         <div
-          className="border border-zinc-900 rounded p-4 select-none bg-black transition absolute"
+          className="border border-zinc-900 rounded select-none bg-black transition absolute"
           style={{ left: obj.x, top: obj.y }}
           ref={(el: any) => (comps.current[index] = el)}
           key={index}
-          onMouseDown={(e) => handleClick(e, index)}
         >
-          {obj.component}
+          <div className="p-4" onMouseDown={(e) => handleClick(e, index)}>
+            {obj.component}
+          </div>
+          <div className={`w-full relative`}>
+            {obj.input.length > 0 && (
+              <PipeIO key={index} io={obj.input} input />
+            )}
+            {obj.output && <PipeIO io={obj.output} />}
+          </div>
         </div>
       ))}
     </div>
