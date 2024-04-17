@@ -6,12 +6,11 @@ import Plus from "@/components/pipe_components/Plus";
 
 export type PipeComponent = {
   id: string;
+  type: string;
   x: string;
   y: string;
   component: ({ object }: { object: PipeComponent }) => React.JSX.Element;
   data: any;
-  type_action: "SEND_DATA_TO" | "RENDER";
-  action?: () => any;
   callback: null | ((data?: any) => any);
   isLinkedWith: string;
   links: string[];
@@ -23,16 +22,17 @@ const componentFactory = () => {
   const createNewComponent = (comp: Component): PipeComponent => {
     const createObj = (obj: any) => {
       return {
-        id: comp.id,
+        id: `${Math.random().toString().replace(".", "")}`,
+        type: comp.id,
         x: "300px",
         y: "60px",
+        component: null,
         callback: null,
-        isLinkedWith: "",
+        isLinkedWith: null,
         links: [],
         data: null,
-        type_action: "",
         input: [],
-        output: "",
+        output: null,
         ...obj,
       };
     };
@@ -42,20 +42,8 @@ const componentFactory = () => {
           component: RequisicaoComp,
           data: {
             url: "",
-            status: 0,
-            response: null,
-          },
-          type_action: "SEND_DATA",
-          action: async function () {
-            try {
-              const response = await fetch(this.data.url);
-              if (response.ok) {
-                this.data.status = response.status;
-                this.data.response = await response.json();
-              }
-            } catch (err) {
-              console.log(err);
-            }
+            method: "GET",
+            headers: {},
           },
           output: "REQUEST",
         });
@@ -68,10 +56,18 @@ const componentFactory = () => {
         });
       }
       case "value": {
-        return createObj({ component: Value, type_action: "SEND_DATA" });
+        return createObj({
+          component: Value,
+          type_action: "SEND_DATA",
+          output: "VALUE",
+        });
       }
       case "plus": {
-        return createObj({ component: Plus, type_action: "SUM" });
+        return createObj({
+          component: Plus,
+          type_action: "SUM",
+          input: ["VALUE"],
+        });
       }
       default: {
         return createObj({});

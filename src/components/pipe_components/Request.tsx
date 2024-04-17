@@ -5,9 +5,9 @@ type Props = {
   object: PipeComponent;
 };
 
-const Request = ({ object }: Props) => {
+const Request = ({ object, ...props }: Props) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div {...props} className="flex flex-col gap-4">
       <header className="flex gap-2">
         <select
           className="bg-transparent border p-2 border-zinc-900 font-medium rounded"

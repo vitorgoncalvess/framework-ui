@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { HTMLAttributes, useState } from "react";
 
-type Props = {
+type Props = HTMLAttributes<HTMLElement> & {
   io: string | string[];
   input?: boolean;
 };
 
-const PipeIO = ({ io, input }: Props) => {
+const PipeIO = ({ io, input, ...props }: Props) => {
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [time, setTime] = useState<NodeJS.Timeout>();
@@ -37,12 +37,12 @@ const PipeIO = ({ io, input }: Props) => {
   };
 
   return (
-    <div className="relative">
+    <div {...props} className="relative">
       <div
         onMouseOver={handleOver}
         onMouseOut={handleOut}
-        className={`bg-zinc-800 h-4 w-4 hover:bg-zinc-300 rounded-full bottom-0 absolute ${
-          input ? "-left-6" : "-right-6"
+        className={`bg-zinc-800 h-4 w-4 hover:bg-zinc-300 rounded-full bottom-2 absolute ${
+          input ? "-left-2" : "-right-2"
         }`}
       ></div>
       {open && (

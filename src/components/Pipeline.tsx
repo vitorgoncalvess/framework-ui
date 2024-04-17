@@ -10,6 +10,15 @@ const Pipeline = () => {
   const [isMoving, setIsMoving] = useState<any>(null);
   const [obj, setObj] = useState<number | any>(null);
   const comps = useRef<any>([]);
+  const [link, setLink] = useState<PipeComponent>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // useEffect(() => {
+  //   const ws = new WebSocket("ws://localhost:8000/echo");
+  //   ws.addEventListener("message", (data) => {
+  //     console.log(data);
+  //   });
+  // }, []);
 
   const handleClick = (e: any) => {
     setIsMoving(e);
@@ -62,8 +71,42 @@ const Pipeline = () => {
     //eslint-disable-next-line
   }, [isMoving]);
 
-  const handleExec = () => {
-    console.log(objects);
+  const handleExec = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://localhost:8000/api", {
+        method: "POST",
+        body: JSON.stringify(objects),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        handleUpdate(data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdate = (data: any[]) => {
+    data.forEach((obj) => {
+      const comp = objects.find((acObj) => acObj.id === obj.id);
+      if (comp) {
+        comp.data = obj.data;
+        if (comp.callback) comp?.callback();
+      }
+    });
+  };
+
+  const handleLink = (obj: PipeComponent) => {
+    if (link && obj.input.includes(link.output)) {
+      link.links.push(obj.id);
+      obj.isLinkedWith = link.id;
+    }
   };
 
   return (
@@ -78,27 +121,39 @@ const Pipeline = () => {
         const Component = object.component;
         return (
           <div
-            className={`border rounded p-4 select-none bg-black transition absolute text-sm hover:border-zinc-600 ${
+            style={{ left: object.x, top: object.y }}
+            className={`border rounded select-none bg-black transition absolute text-sm hover:border-zinc-600 ${
               obj === index ? "border-zinc-600" : "border-zinc-900"
             }`}
-            style={{ left: object.x, top: object.y }}
-            ref={(el: any) => (comps.current[index] = el)}
             key={index}
-            onMouseDown={() => setObj(index)}
+            ref={(el: any) => (comps.current[index] = el)}
           >
-            {<Component object={object} />}
+            <div className="p-4" onMouseDown={() => setObj(index)}>
+              {<Component object={object} />}
+            </div>
             <div className={`w-full relative`}>
               {object.input.length > 0 && (
-                <PipeIO key={index} io={object.input} input />
+                <PipeIO
+                  onMouseUp={() => handleLink(object)}
+                  key={index}
+                  io={object.input}
+                  input
+                />
               )}
-              {object.output && <PipeIO io={object.output} />}
+              {object.output && (
+                <PipeIO
+                  onMouseDown={() => setLink(object)}
+                  io={object.output}
+                />
+              )}
             </div>
           </div>
         );
       })}
       <button
+        disabled={isLoading}
         onClick={handleExec}
-        className="absolute bottom-4 right-4 border border-zinc-500 px-2 py-1 rounded transition hover:border-zinc-300"
+        className="absolute disabled:opacity-50 bottom-4 right-4 border border-zinc-500 px-2 py-1 rounded transition hover:border-zinc-300"
       >
         Executar
       </button>
