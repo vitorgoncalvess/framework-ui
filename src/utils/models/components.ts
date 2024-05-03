@@ -19,7 +19,7 @@ const components: Component[] = [
     image: null,
   },
   {
-    id: "value",
+    id: "object",
     name: "Valor",
     description: "Objeto que irá armazerar um valor.",
     image: null,
@@ -28,6 +28,12 @@ const components: Component[] = [
     id: "plus",
     name: "Somar",
     description: "Somar uma entrada com um valor, ou duas entradas.",
+    image: null,
+  },
+  {
+    id: "object-mapper",
+    name: "Mapeador de Objetos",
+    description: "Depois eu penso",
     image: null,
   },
 ];

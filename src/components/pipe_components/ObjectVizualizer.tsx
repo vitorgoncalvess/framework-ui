@@ -5,7 +5,7 @@ type Props = {
   object: PipeComponent;
 };
 
-const JsonVizualizerComp = ({ object }: Props) => {
+const ObjectVizualizer = ({ object }: Props) => {
   const [obj, setObj] = useState<any>(object.data);
 
   object.callback = function () {
@@ -16,9 +16,9 @@ const JsonVizualizerComp = ({ object }: Props) => {
     <div className="flex flex-col gap-2">
       <h1 className="font-medium">Objeto</h1>
       <div className="rounded border border-zinc-800 max-h-[400px] overflow-auto">
-        {obj ? (
-          Object.keys(obj).map((key) => (
-            <ObjectKey key={key} _key={key} obj={obj} />
+        {obj.value ? (
+          Object.keys(obj.value).map((key) => (
+            <ObjectKey key={key} _key={key} obj={obj.value} />
           ))
         ) : (
           <div className="opacity-60 text-sm p-2">Nenhum objeto recebido</div>
@@ -73,4 +73,4 @@ const ObjectKey = ({ _key, obj }: ObjectProps) => {
     );
 };
 
-export default JsonVizualizerComp;
+export default ObjectVizualizer;

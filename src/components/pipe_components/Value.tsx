@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import Select from "../Select";
 import COMP_VALUE_OPTIONS from "@/utils/models/comp_value_options";
 import Input from "../Input";
@@ -13,10 +12,13 @@ const Value = ({ object }: Props) => {
     <div className="flex flex-col gap-2">
       <header className="flex justify-between items-center">
         <h1 className="font-semibold">Value Type</h1>
-        <Select options={COMP_VALUE_OPTIONS} />
+        <Select
+          onChange={(value) => (object.data.type = value)}
+          options={COMP_VALUE_OPTIONS}
+        />
       </header>
       <Input
-        onChange={({ target }) => (object.data = target.value)}
+        onChange={({ target }) => (object.data.value = Number(target.value))}
         label="Value"
       />
     </div>

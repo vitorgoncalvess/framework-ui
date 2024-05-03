@@ -2,13 +2,19 @@ import React from "react";
 
 type Props = {
   options: string[];
+  onChange: (val: string) => void;
 };
 
-const Select = ({ options }: Props) => {
+const Select = ({ options, onChange }: Props) => {
   return (
-    <select className="bg-transparent border-bd-base border p-2 rounded">
+    <select
+      onChange={({ target }) => onChange(target.value)}
+      className="bg-transparent border-bd-base border p-2 rounded"
+    >
       {options.map((opt) => (
-        <option key={opt}>{opt}</option>
+        <option value={opt} key={opt}>
+          {opt}
+        </option>
       ))}
     </select>
   );

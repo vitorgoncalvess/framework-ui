@@ -1,39 +1,56 @@
-import JsonVizualizerComp from "@/components/pipe_components/JsonVizualizer";
+import ObjectVizualizer from "@/components/pipe_components/ObjectVizualizer";
 import RequisicaoComp from "@/components/pipe_components/Request";
 import { Component } from "../models/components";
 import Value from "@/components/pipe_components/Value";
 import Plus from "@/components/pipe_components/Plus";
+import ObjectMapper from "@/components/pipe_components/ObjectMapper";
 
 export type PipeComponent = {
   id: string;
-  type: string;
-  x: string;
-  y: string;
-  component: ({ object }: { object: PipeComponent }) => React.JSX.Element;
-  data: any;
+  x: number;
+  y: number;
+  component:
+    | (({ object }: { object: PipeComponent }) => React.JSX.Element)
+    | null;
+  data: {
+    type: string;
+  } & any;
   callback: null | ((data?: any) => any);
-  isLinkedWith: string;
-  links: string[];
+  childNodes: Set<string>;
+  hasParents: boolean;
   input: string[];
-  output: string;
+  output: string | null;
+};
+
+type ParsePipeComponent = {
+  [Property in keyof PipeComponent]?: PipeComponent[Property];
+};
+
+export type PipeComponentReq = {
+  id: string;
+  data: any;
+  is_root: boolean;
+  childNodes: string[];
 };
 
 const componentFactory = () => {
   const createNewComponent = (comp: Component): PipeComponent => {
-    const createObj = (obj: any) => {
+    const createObj = (obj: ParsePipeComponent): PipeComponent => {
       return {
         id: `${Math.random().toString().replace(".", "")}`,
-        type: comp.id,
-        x: "300px",
-        y: "60px",
+        x: 300,
+        y: 60,
         component: null,
         callback: null,
-        isLinkedWith: null,
-        links: [],
-        data: null,
+        childNodes: new Set(),
+        hasParents: false,
         input: [],
         output: null,
         ...obj,
+        data: {
+          type: comp.id,
+          ...obj.data,
+        },
       };
     };
     switch (comp.id.toLowerCase()) {
@@ -45,28 +62,42 @@ const componentFactory = () => {
             method: "GET",
             headers: {},
           },
-          output: "REQUEST",
+          output: "RESPONSE",
         });
       }
       case "json-vizualizer": {
         return createObj({
-          component: JsonVizualizerComp,
-          type_action: "RENDER",
-          input: ["REQUEST", "JSON"],
+          component: ObjectVizualizer,
+          input: ["RESPONSE", "OBJECT"],
         });
       }
-      case "value": {
+      case "object": {
         return createObj({
           component: Value,
-          type_action: "SEND_DATA",
           output: "VALUE",
+          data: {
+            value: null,
+          },
         });
       }
       case "plus": {
         return createObj({
           component: Plus,
-          type_action: "SUM",
+          data: {
+            value: 0,
+          },
           input: ["VALUE"],
+        });
+      }
+      case "object-mapper": {
+        return createObj({
+          component: ObjectMapper,
+          data: {
+            keys: [],
+            selectedKeys: [],
+          },
+          input: ["OBJECT", "RESPONSE"],
+          output: "OBJECT",
         });
       }
       default: {

@@ -34,9 +34,9 @@ const Sidebar = ({ setObjects }: Props) => {
     >
       <div
         style={{
-          transform: isOpen ? "translateX(0px)" : "translateX(-256px)",
+          transform: isOpen ? "translateX(0px)" : "translateX(-258px)",
         }}
-        className="absolute bg-black z-10 top-0 bottom-0 left-0 border-r w-64 border-bd-base transition-all duration-300 overflow-auto p-4 flex flex-col gap-4"
+        className="absolute bg-black z-[9999] top-0 bottom-0 left-0 border-r w-64 border-bd-base transition-all duration-300 overflow-auto p-4 flex flex-col gap-4"
       >
         {components.map((component, index) => (
           <PipeComponent

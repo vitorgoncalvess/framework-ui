@@ -1,6 +1,6 @@
 import React, { HTMLAttributes, useState } from "react";
 
-type Props = HTMLAttributes<HTMLElement> & {
+type Props = HTMLAttributes<HTMLDivElement> & {
   io: string | string[];
   input?: boolean;
 };
