@@ -1,41 +1,32 @@
-import { PipeComponent } from "@/utils/factories/componentFactory";
-import React, { useEffect, useState } from "react";
+import useObjectStore, { getObject } from "@/store/objectsStore";
+import React from "react";
 
 type Props = {
-  object: PipeComponent;
+  id: string;
 };
 
-const ObjectMapper = ({ object }: Props) => {
-  const [keys, setKeys] = useState<string[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-
-  object.callback = function () {
-    setKeys(object.data.keys);
-    setSelectedKeys(object.data.selectedKeys);
-  };
-
-  useEffect(() => {
-    setKeys(object.data.keys);
-    setSelectedKeys(object.data.keys);
-  }, [object]);
+const ObjectMapper = ({ id }: Props) => {
+  const obj = useObjectStore(getObject(id));
+  const updateData = useObjectStore((store) => store.updateData);
 
   const handleKey = (key: string) => {
-    let new_keys = [];
-    if (selectedKeys.includes(key)) {
-      new_keys = selectedKeys.filter((ac_key) => ac_key !== key);
+    let selectedKeys = [];
+    if (obj.data.selectedKeys.includes(key)) {
+      selectedKeys = obj.data.selectedKeys.filter(
+        (ac_key: string) => ac_key !== key
+      );
     } else {
-      new_keys = [...keys, key];
+      selectedKeys = [...obj.data.selectedKeys, key];
     }
-    setSelectedKeys(new_keys);
-    object.data.selectedKeys = new_keys;
+    updateData(obj.id, { selectedKeys });
   };
 
   return (
     <div className="flex flex-col gap-2">
       <h1 className="font-medium">Objeto Mapeado</h1>
       <ul className="grid grid-cols-2 gap-2 overflow-auto max-h-[200px]">
-        {keys.map((key) => {
-          const bool = selectedKeys.includes(key);
+        {obj.data.keys.map((key: string) => {
+          const bool = obj.data.selectedKeys.includes(key);
           return (
             <li key={key}>
               <div

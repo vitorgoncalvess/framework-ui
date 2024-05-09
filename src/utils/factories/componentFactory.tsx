@@ -9,9 +9,8 @@ export type PipeComponent = {
   id: string;
   x: number;
   y: number;
-  component:
-    | (({ object }: { object: PipeComponent }) => React.JSX.Element)
-    | null;
+  z: number;
+  component: (({ id }: { id: string }) => React.JSX.Element) | null;
   data: {
     type: string;
   } & any;
@@ -33,13 +32,18 @@ export type PipeComponentReq = {
   childNodes: string[];
 };
 
+export const genId = () => {
+  return Math.random().toString().replace(".", "");
+};
+
 const componentFactory = () => {
   const createNewComponent = (comp: Component): PipeComponent => {
     const createObj = (obj: ParsePipeComponent): PipeComponent => {
       return {
-        id: `${Math.random().toString().replace(".", "")}`,
+        id: genId(),
         x: 300,
         y: 60,
+        z: 0,
         component: null,
         callback: null,
         childNodes: new Set(),

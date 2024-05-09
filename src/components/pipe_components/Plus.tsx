@@ -1,23 +1,19 @@
-import React, { useState } from "react";
-import { PipeComponent } from "@/utils/factories/componentFactory";
+import React from "react";
+import useObjectStore, { getObject } from "@/store/objectsStore";
 
 type Props = {
-  object: PipeComponent;
+  id: string;
 };
 
-const Plus = ({ object }: Props) => {
-  const [result, setResult] = useState(0);
-
-  object.callback = function () {
-    setResult(object.data.value);
-  };
+const Plus = ({ id }: Props) => {
+  const obj = useObjectStore(getObject(id));
 
   return (
     <div className="flex flex-col gap-2">
       <h1 className="font-medium">Plus</h1>
       <h2>Result</h2>
       <div className="border border-bd-base h-8 w-36 rounded flex items-center p-2">
-        {JSON.stringify(result)}
+        {JSON.stringify(obj.data.value)}
       </div>
     </div>
   );

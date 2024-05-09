@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import components, { Component } from "@/utils/models/components";
 import PipeComponent from "./PipeComponent";
 import componentFactory, {
@@ -8,7 +8,7 @@ import Image from "next/image";
 import menu from "@images/menu.svg";
 
 type Props = {
-  setObjects: Dispatch<SetStateAction<Type[]>>;
+  setObjects: (obj: Type) => void;
 };
 
 const Sidebar = ({ setObjects }: Props) => {
@@ -17,10 +17,7 @@ const Sidebar = ({ setObjects }: Props) => {
   const factory = componentFactory();
 
   const handleNew = (component: Component) => {
-    setObjects((objects) => [
-      ...objects,
-      factory.createNewComponent(component),
-    ]);
+    setObjects(factory.createNewComponent(component));
   };
 
   const handleClickOutside = (e: any) => {

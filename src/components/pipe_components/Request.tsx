@@ -1,27 +1,12 @@
-import { PipeComponent } from "@/utils/factories/componentFactory";
-import { useEffect, useState } from "react";
+import useObjectStore, { getObject } from "@/store/objectsStore";
 
 type Props = {
-  object: PipeComponent;
+  id: string;
 };
 
-type InputData = {
-  url?: string;
-  method?: string;
-  headers?: any;
-};
-
-const Request = ({ object }: Props) => {
-  const [obj, setObj] = useState<PipeComponent>();
-
-  useEffect(() => {
-    setObj(object);
-  }, [object]);
-
-  const handleChange = (value: InputData) => {
-    object.data = { ...object.data, ...value };
-    setObj((obj) => ({ ...obj, ...object }));
-  };
+const Request = ({ id }: Props) => {
+  const obj = useObjectStore(getObject(id));
+  const updateObject = useObjectStore((state) => state.updateData);
 
   return (
     <div className="flex flex-col gap-4">
@@ -30,7 +15,7 @@ const Request = ({ object }: Props) => {
           className="bg-transparent border p-2 border-zinc-900 font-medium rounded"
           name=""
           id=""
-          onChange={({ target }) => handleChange({ method: target.value })}
+          onChange={({ target }) => updateObject(id, { method: target.value })}
           value={obj?.data?.method}
         >
           <option value="GET">GET</option>
@@ -38,7 +23,7 @@ const Request = ({ object }: Props) => {
           <option value="DELETE">DELETE</option>
         </select>
         <input
-          onChange={({ target }) => handleChange({ url: target.value })}
+          onChange={({ target }) => updateObject(id, { url: target.value })}
           placeholder="http://localhost:3000"
           className="rounded-sm bg-black border border-zinc-900 p-2"
           type="text"
