@@ -1,24 +1,20 @@
-import { PipeComponent } from "@/utils/factories/componentFactory";
+import useObjectStore, { getObject } from "@/store/objectsStore";
 import React, { useState } from "react";
 
 type Props = {
-  object: PipeComponent;
+  id: string;
 };
 
-const ObjectVizualizer = ({ object }: Props) => {
-  const [obj, setObj] = useState<any>(object.data);
-
-  object.callback = function () {
-    setObj(object.data);
-  };
+const ObjectVizualizer = ({ id }: Props) => {
+  const obj = useObjectStore(getObject(id));
 
   return (
     <div className="flex flex-col gap-2">
       <h1 className="font-medium">Objeto</h1>
       <div className="rounded border border-zinc-800 max-h-[400px] overflow-auto">
-        {obj.value ? (
-          Object.keys(obj.value).map((key) => (
-            <ObjectKey key={key} _key={key} obj={obj.value} />
+        {obj.data.value ? (
+          Object.keys(obj.data.value).map((key) => (
+            <ObjectKey key={key} _key={key} obj={obj.data.value} />
           ))
         ) : (
           <div className="opacity-60 text-sm p-2">Nenhum objeto recebido</div>

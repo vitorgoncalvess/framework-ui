@@ -1,24 +1,28 @@
 import Select from "../Select";
 import COMP_VALUE_OPTIONS from "@/utils/models/comp_value_options";
 import Input from "../Input";
-import { PipeComponent } from "@/utils/factories/componentFactory";
+import useObjectStore from "@/store/objectsStore";
 
 type Props = {
-  object: PipeComponent;
+  id: string;
 };
 
-const Value = ({ object }: Props) => {
+const Value = ({ id }: Props) => {
+  const updateData = useObjectStore((state) => state.updateData);
+
   return (
     <div className="flex flex-col gap-2">
       <header className="flex justify-between items-center">
         <h1 className="font-semibold">Value Type</h1>
         <Select
-          onChange={(value) => (object.data.type = value)}
+          onChange={(value) => updateData(id, { type: value })}
           options={COMP_VALUE_OPTIONS}
         />
       </header>
       <Input
-        onChange={({ target }) => (object.data.value = Number(target.value))}
+        onChange={({ target }) =>
+          updateData(id, { value: Number(target.value) })
+        }
         label="Value"
       />
     </div>

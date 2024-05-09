@@ -8,9 +8,9 @@ import {
   PipeComponentReq,
 } from "@/utils/factories/componentFactory";
 import * as d3 from "d3";
+import useObjectStore, { getObjects } from "@/store/objectsStore";
 
 const Pipeline = () => {
-  const [objects, setObjects] = useState<PipeComponent[]>([]);
   const [isMoving, setIsMoving] = useState<any>(null);
   const [obj, setObj] = useState<number | any>(null);
   const [link, setLink] = useState<PipeComponent>();
@@ -18,7 +18,17 @@ const Pipeline = () => {
   const comps = useRef<any>([]);
   const linksRef = useRef<any>([]);
   const [links, setLinks] = useState<string[][]>([]);
-  const [lastKey, setLastKey] = useState("");
+
+  const objects = getObjects();
+
+  const {
+    addNewObject,
+    createLink,
+    deleteObject,
+    updatePos,
+    copyObject,
+    updateObjects,
+  } = useObjectStore((state) => state);
 
   // useEffect(() => {
   //   const ws = new WebSocket("ws://localhost:8000/echo");
@@ -54,44 +64,84 @@ const Pipeline = () => {
       return Number(str.replace("px", ""));
     };
 
-    const object = objects.find((acObj) => acObj.id === obj);
+    const x = formatCss(comp.style.left) + (e.clientX - isMoving.clientX);
+    const y = formatCss(comp.style.top) + (e.clientY - isMoving.clientY);
 
-    if (object) {
-      object.x = formatCss(comp.style.left) + (e.clientX - isMoving.clientX);
-      object.y = formatCss(comp.style.top) + (e.clientY - isMoving.clientY);
-      setObjects((objects) => [
-        ...objects.filter((acObj) => acObj.id !== obj),
-        object,
-      ]);
-    }
+    comp.style.left = x + "px";
+    comp.style.top = y + "px";
+
+    updatePos(obj, x, y);
+
+    // setObjects((objects) => [
+    //   ...objects.filter((acObj) => acObj.id !== obj),
+    //   object,
+    // ]);
+    // setPosition(object.id, object);
 
     isMoving.clientX = e.clientX;
     isMoving.clientY = e.clientY;
+
+    buildLinks();
+  };
+
+  const buildLinks = (newLinks?: string[][]) => {
+    let acLinks = links;
+
+    if (newLinks) {
+      acLinks = newLinks;
+    }
+
+    acLinks.forEach((link, index) => {
+      const svg = d3.select(linksRef.current[index]);
+
+      svg.selectAll("*").remove(); // Limpa o SVG
+
+      const lineGenerator = d3.line().curve(d3.curveBasis);
+
+      const x1 = Number(comps.current[link[0]].style.left.replace("px", ""));
+      const y1 = Number(comps.current[link[0]].style.top.replace("px", ""));
+      const x2 = Number(comps.current[link[1]].style.left.replace("px", ""));
+      const y2 = Number(comps.current[link[1]].style.top.replace("px", ""));
+
+      const pathData = lineGenerator([
+        [x1, y1 + comps.current[link[0]].clientHeight - 15],
+        [
+          x1 + (x2 + comps.current[link[1]].clientWidth - x1) / 2,
+          y1 + comps.current[link[0]].clientHeight - 15,
+        ],
+        [
+          x2 +
+            comps.current[link[1]].clientWidth -
+            (x2 + comps.current[link[1]].clientWidth - x1) / 2,
+          y2 + comps.current[link[1]].clientHeight - 15,
+        ],
+        [
+          x2 + comps.current[link[1]].clientWidth,
+          y2 + comps.current[link[1]].clientHeight - 15,
+        ],
+      ]);
+
+      svg
+        .append("path")
+        .attr("d", pathData)
+        .attr("fill", "none")
+        .attr("stroke", "white");
+    });
   };
 
   let lastKeyPressed = "";
 
   const handleKeyboard = (e: any) => {
-    setLastKey(e.key);
     if (e.key === "Delete") {
       e.preventDefault();
-      setObjects((objects) => objects.filter((acObj) => acObj.id !== obj));
+      deleteObject(obj);
       setLinks((links) =>
         links.filter((link) => link[0] !== obj && link[1] !== obj)
       );
     }
     if (lastKeyPressed === "Control" && e.key === "d") {
       e.preventDefault();
-      const object = { ...objects.find((acObj) => acObj.id === obj) };
-      if (Object.keys(object).length) {
-        object.id = `${Math.random().toString().replace(".", "")}`;
-        //@ts-ignore
-        object.x = object.x + 20;
-        //@ts-ignore
-        object.y = object.y + 20;
-        //@ts-ignore
-        setObjects((objects) => [...objects, object]);
-      }
+      copyObject(obj);
     }
     lastKeyPressed = e.key;
   };
@@ -145,7 +195,7 @@ const Pipeline = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        handleUpdate(data);
+        updateObjects(data);
       }
     } catch (err) {
       console.log(err);
@@ -154,80 +204,17 @@ const Pipeline = () => {
     }
   };
 
-  const handleUpdate = (data: any[]) => {
-    data.forEach((obj) => {
-      const comp = objects.find((acObj) => acObj.id === obj.id);
-      if (comp) {
-        if (typeof obj.data === "object") {
-          comp.data = { ...comp.data, ...obj.data };
-        } else {
-          comp.data = obj.data;
-        }
-        if (comp.callback) comp.callback();
-      }
-    });
-  };
-
   const handleLink = (obj: PipeComponent) => {
     if (link && link.output && obj.input.includes(link.output)) {
-      obj.childNodes.add(link.id);
-      link.hasParents = true;
-      setLinks((links) => [...links, [obj.id, link.id]]);
+      createLink(obj.id, link.id);
+      setLinks((links) => {
+        setTimeout(() => {
+          buildLinks([...links, [obj.id, link.id]]);
+        });
+        return [...links, [obj.id, link.id]];
+      });
     }
   };
-
-  useEffect(() => {
-    links.forEach((link, index) => {
-      const svg = d3.select(linksRef.current[index]);
-
-      svg.selectAll("*").remove(); // Limpa o SVG
-
-      const lineGenerator = d3.line().curve(d3.curveBasis);
-
-      const pathData = lineGenerator([
-        [
-          comps.current[link[0]].offsetLeft,
-          comps.current[link[0]].offsetTop +
-            comps.current[link[0]].clientHeight -
-            15,
-        ],
-        [
-          comps.current[link[0]].offsetLeft +
-            (comps.current[link[1]].offsetLeft +
-              comps.current[link[1]].clientWidth -
-              comps.current[link[0]].offsetLeft) /
-              2,
-          comps.current[link[0]].offsetTop +
-            comps.current[link[0]].clientHeight -
-            15,
-        ],
-        [
-          comps.current[link[1]].offsetLeft +
-            comps.current[link[1]].clientWidth -
-            (comps.current[link[1]].offsetLeft +
-              comps.current[link[1]].clientWidth -
-              comps.current[link[0]].offsetLeft) /
-              2,
-          comps.current[link[1]].offsetTop +
-            comps.current[link[1]].clientHeight -
-            15,
-        ],
-        [
-          comps.current[link[1]].offsetLeft +
-            comps.current[link[1]].clientWidth,
-          comps.current[link[1]].offsetTop +
-            comps.current[link[1]].clientHeight -
-            15,
-        ],
-      ]);
-
-      svg
-        .append("path")
-        .attr("d", pathData)
-        .attr("fill", "none")
-        .attr("stroke", "white");
-    });
-  }, [objects, links]);
 
   return (
     <div
@@ -249,22 +236,26 @@ const Pipeline = () => {
             <g key={index} ref={(el) => (linksRef.current[index] = el)}></g>
           ))}
         </svg>
-        <Sidebar setObjects={setObjects} />
+        <Sidebar setObjects={addNewObject} />
         {objects?.map((object, index) => {
           if (object) {
             const Component = object.component;
             if (Component)
               return (
                 <div
-                  style={{ left: object.x + "px", top: object.y + "px" }}
-                  className={`border rounded select-none bg-black transition absolute z-50 text-sm ${
+                  style={{
+                    left: object.x + "px",
+                    top: object.y + "px",
+                    zIndex: object.z,
+                  }}
+                  className={`border rounded select-none bg-black transition absolute z-0 text-sm ${
                     obj === object.id ? "border-zinc-500" : "border-zinc-900"
                   }`}
                   key={index}
                   ref={(el: any) => (comps.current[object.id] = el)}
                 >
                   <div className="p-4" onMouseDown={() => setObj(object.id)}>
-                    {<Component object={object} />}
+                    {<Component id={object.id} />}
                   </div>
                   <div className={`w-full relative`}>
                     {object.input.length > 0 && (
