@@ -24,12 +24,12 @@ type ObjectStore = {
   updateObjects: (objects: PipeComponentReq[]) => void;
 };
 
-const createObject = (obj: Component): PipeComponent => {
+const createObject = (obj: Component, z: number): PipeComponent => {
   return {
     id: genId(),
     x: 300,
     y: 300,
-    z: 0,
+    z,
     path: obj.name,
     name: obj.config.name,
     component: null,
@@ -48,7 +48,7 @@ const useObjectStore = create<ObjectStore>()(
     z: 0,
     addNewObject: (obj) =>
       set((state) => {
-        const object = createObject(obj);
+        const object = createObject(obj, state.z++);
         if (!state.cache[object.name]) {
           const Component = dynamic(
             () => import("@/components/pipe_components/" + object.path),
