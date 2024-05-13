@@ -1,8 +1,21 @@
+"use client";
+
 import useObjectStore, { getObject } from "@/store/objectsStore";
 import React from "react";
 
 type Props = {
   id: string;
+};
+
+export const config = {
+  name: "Mapeador de objetos",
+  description: "Depois eu penso",
+  data: {
+    keys: [],
+    selectedKeys: [],
+  },
+  input: ["OBJECT", "RESPONSE"],
+  output: "OBJECT",
 };
 
 const ObjectMapper = ({ id }: Props) => {

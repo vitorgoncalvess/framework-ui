@@ -3,14 +3,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
 import PipeIO from "./PipeIO";
-import {
-  PipeComponent,
-  PipeComponentReq,
-} from "@/utils/factories/componentFactory";
+import { PipeComponent, PipeComponentReq } from "@/utils/types/pipe_components";
 import * as d3 from "d3";
 import useObjectStore, { getObjects } from "@/store/objectsStore";
+import useComponentsStore from "@/store/componentsStore";
 
-const Pipeline = () => {
+type Props = {
+  components: {
+    name: string;
+    config: any;
+  }[];
+};
+
+const Pipeline = ({ components }: Props) => {
   const [isMoving, setIsMoving] = useState<any>(null);
   const [obj, setObj] = useState<number | any>(null);
   const [link, setLink] = useState<PipeComponent>();
@@ -21,14 +26,15 @@ const Pipeline = () => {
 
   const objects = getObjects();
 
-  const {
-    addNewObject,
-    createLink,
-    deleteObject,
-    updatePos,
-    copyObject,
-    updateObjects,
-  } = useObjectStore((state) => state);
+  const setComponents = useComponentsStore((state) => state.setComponents);
+
+  const { createLink, deleteObject, updatePos, copyObject, updateObjects } =
+    useObjectStore((state) => state);
+
+  useEffect(() => {
+    setComponents(components);
+    //eslint-disable-next-line
+  }, [components]);
 
   // useEffect(() => {
   //   const ws = new WebSocket("ws://localhost:8000/echo");
@@ -236,7 +242,7 @@ const Pipeline = () => {
             <g key={index} ref={(el) => (linksRef.current[index] = el)}></g>
           ))}
         </svg>
-        <Sidebar setObjects={addNewObject} />
+        <Sidebar />
         {objects?.map((object, index) => {
           if (object) {
             const Component = object.component;
@@ -248,14 +254,14 @@ const Pipeline = () => {
                     top: object.y + "px",
                     zIndex: object.z,
                   }}
+                  key={object.id}
                   className={`border rounded select-none bg-black transition absolute z-0 text-sm ${
                     obj === object.id ? "border-zinc-500" : "border-zinc-900"
                   }`}
-                  key={index}
                   ref={(el: any) => (comps.current[object.id] = el)}
                 >
                   <div className="p-4" onMouseDown={() => setObj(object.id)}>
-                    {<Component id={object.id} />}
+                    <Component id={object.id} />
                   </div>
                   <div className={`w-full relative`}>
                     {object.input.length > 0 && (

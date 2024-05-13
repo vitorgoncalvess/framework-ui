@@ -1,4 +1,4 @@
-import { Component } from "@/utils/models/components";
+import { Component } from "@/store/componentsStore";
 import React from "react";
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 };
 
 const PipeComponent = ({ component, onClick }: Props) => {
-  const { name, description } = component;
+  const { name, config } = component;
   return (
     <div
       onClick={onClick}
@@ -15,8 +15,10 @@ const PipeComponent = ({ component, onClick }: Props) => {
     >
       <div className="bg-bd-base h-24 rounded-sm"></div>
       <div>
-        <h1 className="font-medium">{name}</h1>
-        <h2 className="opacity-50 text-sm">{description}</h2>
+        <h1 className="font-medium">
+          {config.name || name.replace(".tsx", "")}
+        </h1>
+        <h2 className="opacity-50 text-sm">{config.description}</h2>
       </div>
     </div>
   );

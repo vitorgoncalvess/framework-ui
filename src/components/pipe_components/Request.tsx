@@ -1,7 +1,20 @@
+"use client";
+
 import useObjectStore, { getObject } from "@/store/objectsStore";
 
 type Props = {
   id: string;
+};
+
+export const config = {
+  name: "Requisição",
+  description: "Realizar requisições atraves de endpoints",
+  data: {
+    url: "",
+    method: "GET",
+    headers: {},
+  },
+  output: "RESPONSE",
 };
 
 const Request = ({ id }: Props) => {

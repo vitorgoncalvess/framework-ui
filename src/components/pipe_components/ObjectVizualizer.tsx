@@ -1,8 +1,19 @@
+"use client";
+
 import useObjectStore, { getObject } from "@/store/objectsStore";
 import React, { useState } from "react";
 
 type Props = {
   id: string;
+};
+
+export const config = {
+  name: "Visualizador de Objeto",
+  description: "Visualizar objetos em uma forma mais organizada e limpa.",
+  data: {
+    value: {},
+  },
+  input: ["RESPONSE", "OBJECT"],
 };
 
 const ObjectVizualizer = ({ id }: Props) => {
