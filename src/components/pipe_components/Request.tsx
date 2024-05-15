@@ -1,5 +1,6 @@
 "use client";
 
+import useDebounceState from "@/hooks/useDebouceState";
 import useObjectStore, { getObject } from "@/store/objectsStore";
 
 type Props = {
@@ -19,7 +20,10 @@ export const config = {
 
 const Request = ({ id }: Props) => {
   const obj = useObjectStore(getObject(id));
-  const updateObject = useObjectStore((state) => state.updateData);
+  const updateFn = useObjectStore((state) => state.updateData);
+  const [state, updateState] = useDebounceState(obj, (state) => {
+    updateFn(id, state.data)
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -28,19 +32,19 @@ const Request = ({ id }: Props) => {
           className="bg-transparent border p-2 border-zinc-900 font-medium rounded"
           name=""
           id=""
-          onChange={({ target }) => updateObject(id, { method: target.value })}
-          value={obj?.data?.method}
+          onChange={({ target }) => updateState({...state, data: {...state.data, method: target.value}})}
+          value={state?.data?.method}
         >
           <option value="GET">GET</option>
           <option value="POST">POST</option>
           <option value="DELETE">DELETE</option>
         </select>
         <input
-          onChange={({ target }) => updateObject(id, { url: target.value })}
+          onChange={({ target }) => updateState({...state, data: {...state.data, url: target.value}})}
           placeholder="http://localhost:3000"
           className="rounded-sm bg-black border border-zinc-900 p-2"
           type="text"
-          value={obj?.data?.url || ""}
+          value={state?.data?.url || ""}
         />
       </header>
     </div>

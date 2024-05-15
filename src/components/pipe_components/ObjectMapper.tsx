@@ -22,6 +22,8 @@ const ObjectMapper = ({ id }: Props) => {
   const obj = useObjectStore(getObject(id));
   const updateData = useObjectStore((store) => store.updateData);
 
+  console.log("render")
+
   const handleKey = (key: string) => {
     let selectedKeys = [];
     if (obj.data.selectedKeys.includes(key)) {
