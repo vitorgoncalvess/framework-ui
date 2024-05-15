@@ -104,4 +104,20 @@ body {
       opacity: 0;
     }
   }
+
+  .comp-loading {
+    animation: comp-loading 0.4s infinite ease-in-out;
+  }
+
+  @keyframes comp-loading {
+    0% {
+      transform: translateX(80px);
+    }
+    50% {
+      transform: initial;
+    }
+    100% {
+      transform: translateX(80px);
+    }
+  }
 }

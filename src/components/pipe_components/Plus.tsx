@@ -1,8 +1,19 @@
+"use client";
+
 import React from "react";
 import useObjectStore, { getObject } from "@/store/objectsStore";
 
 type Props = {
   id: string;
+};
+
+export const config = {
+  name: "Somar",
+  description: "Somar uma entrada com um valor, ou duas entradas.",
+  data: {
+    value: 0,
+  },
+  input: ["VALUE"],
 };
 
 const Plus = ({ id }: Props) => {

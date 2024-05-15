@@ -1,10 +1,21 @@
+"use client";
+
 import Select from "../Select";
-import COMP_VALUE_OPTIONS from "@/utils/models/comp_value_options";
 import Input from "../Input";
 import useObjectStore from "@/store/objectsStore";
 
 type Props = {
   id: string;
+};
+
+export const config = {
+  name: "Objeto",
+  description: "Objeto que irá armazerar um valor.",
+  options: ["Number"],
+  output: "VALUE",
+  data: {
+    value: null,
+  },
 };
 
 const Value = ({ id }: Props) => {
@@ -16,7 +27,7 @@ const Value = ({ id }: Props) => {
         <h1 className="font-semibold">Value Type</h1>
         <Select
           onChange={(value) => updateData(id, { type: value })}
-          options={COMP_VALUE_OPTIONS}
+          options={config.options}
         />
       </header>
       <Input

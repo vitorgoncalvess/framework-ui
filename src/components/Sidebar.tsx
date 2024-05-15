@@ -1,23 +1,33 @@
-import React, { useState } from "react";
-import components, { Component } from "@/utils/models/components";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import PipeComponent from "./PipeComponent";
-import componentFactory, {
-  PipeComponent as Type,
-} from "@/utils/factories/componentFactory";
 import Image from "next/image";
 import menu from "@images/menu.svg";
+import useComponentsStore, { Component } from "@/store/componentsStore";
+import useObjectStore from "@/store/objectsStore";
 
 type Props = {
-  setObjects: (obj: Type) => void;
+  setObjects: (obj: Component) => void;
 };
 
-const Sidebar = ({ setObjects }: Props) => {
+const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const components = useComponentsStore((state) => state.components);
+  const addNewObject = useObjectStore((state) => state.addNewObject);
 
-  const factory = componentFactory();
+  useEffect(() => {
+    components.forEach((comp) => {
+      if (!comp.config) {
+        throw new Error(
+          `${comp.name} não está exportando objeto de configuração`
+        );
+      }
+    });
+  }, [components]);
 
   const handleNew = (component: Component) => {
-    setObjects(factory.createNewComponent(component));
+    addNewObject(component);
   };
 
   const handleClickOutside = (e: any) => {
