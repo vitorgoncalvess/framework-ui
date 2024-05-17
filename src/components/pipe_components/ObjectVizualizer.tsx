@@ -10,6 +10,7 @@ type Props = {
 export const config = {
   name: "Visualizador de Objeto",
   description: "Visualizar objetos em uma forma mais organizada e limpa.",
+  type: "json-vizualizer",
   data: {
     value: {},
   },

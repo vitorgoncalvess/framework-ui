@@ -33,7 +33,10 @@ const createObject = (obj: Component, z: number): PipeComponent => {
     path: obj.name,
     name: obj.config.name,
     component: null,
-    data: obj.config.data,
+    data: {
+      type: obj.config.type,
+      ...obj.config.data,
+    },
     childNodes: new Set(),
     hasParents: false,
     input: obj.config.input || [],

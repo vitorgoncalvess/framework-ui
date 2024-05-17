@@ -10,6 +10,7 @@ type Props = {
 export const config = {
   name: "Mapeador de objetos",
   description: "Depois eu penso",
+  type: "object-mapper",
   data: {
     keys: [],
     selectedKeys: [],
@@ -21,8 +22,6 @@ export const config = {
 const ObjectMapper = ({ id }: Props) => {
   const obj = useObjectStore(getObject(id));
   const updateData = useObjectStore((store) => store.updateData);
-
-  console.log("render")
 
   const handleKey = (key: string) => {
     let selectedKeys = [];
